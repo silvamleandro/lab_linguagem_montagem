@@ -241,12 +241,7 @@ again:
         jz para
         mov cx,ant_col
         jmp again
-        
-
-
-;stop:    
-;    mov cx,0x0
-;    mov dx,0x0    
+           
 para:
     ; Limpa o cursor
     mov cx,0
