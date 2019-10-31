@@ -1,21 +1,23 @@
-;Movendo um quadrado branco de 10x10 pixels na tela
+; Este programa refere-se ao trabalho 1 do Laboratorio de Linguagem de Montagem
+; realizado pelo grupo 3, sendo composto pelos alunos:
+; Paulo Andre Pimenta Aragao
+; Leandro Marcos da Silva
+; Victor Fernandes Gardini 
+
+; Bacharelado em Ciencia da Computacao - Universidade Estatual Paulista (UNESP) 
 
 org 100h
              
 jmp startCenario
-;jmp startJogo
          
-col dw ? ;armazena o tamanho da coluna (10px) 
-ant_col dw ? ; inicio impressao, coluna
-ant_linha dw ? ; inicio impressao, linha
-linha dw 100 ;o maximo de linha que ele vai imprimir
-aux_ax dw ?
-aux_cx dw ?
-aux_dx dw ?
-houve_colisao_W dw 0 
-houve_colisao_A dw 0
-houve_colisao_S dw 0
-houve_colisao_D dw 0
+col dw ?              ; Armazena o tamanho da coluna (10px) 
+ant_col dw ?          ; Inicio impressao, coluna
+ant_linha dw ?        ; Inicio impressao, linha
+linha dw 100          ; O maximo de linha que ele vai imprimir
+houve_colisao_W dw 0  ; Verifica Colisao em W
+houve_colisao_A dw 0  ; Verifica Colisao em A
+houve_colisao_S dw 0  ; Verifica Colisao em S
+houve_colisao_D dw 0  ; Verifica Colisao em D
 
 startCenario:
     
@@ -215,8 +217,6 @@ startCenario:
 
 
 startJogo:
-
-
  
 mov cx,150
 mov dx,90
@@ -271,8 +271,9 @@ para:
         
     int 10h
     
-    mov ah,1h
-    int 21h
+    ;Le a entrada sem aparecer na tela
+    mov ah,0h
+    int 16h
     
     ; Baixo
     cmp al,'S' 
@@ -300,7 +301,14 @@ para:
     jz W
             
     cmp al,'w'
-    jz W
+    jz W     
+    
+    ; Sair
+    cmp al,'Q'
+    jz fim
+    
+    cmp al,'q'
+    jz fim
     
  
 D:  ;Funcionando
@@ -312,7 +320,7 @@ D:  ;Funcionando
     
     colisao_D:
         mov houve_colisao_D, 1
-        mov al,0x4 ; vermelho 0
+        mov al,0x4 ; vermelho
         
     continua_D:
         mov dx,ant_linha
@@ -328,7 +336,7 @@ S:  ;Funcionando
     
     colisao_S:
         mov houve_colisao_S, 1
-        mov al,0x4 ; vermelho 0
+        mov al,0x4 ; vermelho
          
     continua_S:
         add ant_linha,10
@@ -345,7 +353,7 @@ A:  ;Funcionando
     
     colisao_A:
        mov houve_colisao_A, 1
-       mov al,0x4 ; vermelho 0
+       mov al,0x4 ; vermelho
              
     continua_A: 
         mov dx,ant_linha             
@@ -355,7 +363,7 @@ A:  ;Funcionando
         jmp again     
     
 
-W:  
+W:  ;Funcionando
     mov dx,ant_linha
     cmp dx,0
     jz auxiliar
@@ -373,7 +381,7 @@ W:
         jmp again   
          
          
-apaga_D:
+apaga_D: ; Apaga o bloquinho ao andar para a direita
     mov al,0x0
     mov dx,ant_linha
     mov cx,ant_col
@@ -400,7 +408,7 @@ apaga_D:
         jmp imprimir_apaga_D
   
         
-apaga_S:  
+apaga_S: ; Apaga o bloquinho ao andar para baixo 
     mov dx,ant_linha
     mov al,0x0
     mov cx,ant_col 
@@ -427,7 +435,7 @@ apaga_S:
         jmp imprimir_apaga_S 
       
         
-apaga_A:  
+apaga_A: ; Apaga o bloquinho ao andar para a esquerda 
     mov dx,ant_linha
     mov al,0x0
     mov cx,ant_col
@@ -454,7 +462,7 @@ apaga_A:
         jmp imprimir_apaga_A
       
         
-apaga_W:
+apaga_W: ; Apaga o bloquinho ao andar para cima
     mov dx,ant_linha
     mov al,0x0
     mov cx,ant_col 
@@ -557,20 +565,20 @@ colisao2_tecla_D:
             jmp continua_D ; everything is good, for now
                                                         
                                                         
-reimprimir:  ;Verifica onde qual bloco deve ser reimpresso         
-    mov linha,100  ;Seta a linha como 100
+reimprimir:                    ;Verifica onde qual bloco deve ser reimpresso         
+    mov linha,100              ;Seta a linha como 100
     
     ;Verificando local correto de reimpressao
-    cmp houve_colisao_W,1
-    jz b1_imprimir     
+    cmp houve_colisao_W,1      ;Se houver colisao no W
+    jz b1_imprimir             ;Reimprime o bloco 1    
     
-    cmp houve_colisao_A,1 
-    jz b1_imprimir
+    cmp houve_colisao_A,1      ;Se houver colisao no A 
+    jz b1_imprimir             ;Reimprime o bloco 1
     
-    cmp houve_colisao_S,1  
-    jz b2_imprimir
-    
-    cmp houve_colisao_D,1  
-    jz b2_imprimir
+    cmp houve_colisao_S,1      ;Se houver colisao no S  
+    jz b2_imprimir             ;Reimprime o bloco 2
+                    
+    cmp houve_colisao_D,1      ;Se houver colisao no D  
+    jz b2_imprimir             ;Reimprime o bloco 2
 
 fim: ret
