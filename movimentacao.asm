@@ -12,10 +12,7 @@ linha dw 100 ;o maximo de linha que ele vai imprimir
 aux_ax dw ?
 aux_cx dw ?
 aux_dx dw ?
-houve_colisao_W dw 0 
-houve_colisao_A dw 0
-houve_colisao_S dw 0
-houve_colisao_D dw 0
+
 
 startCenario:
     
@@ -116,12 +113,7 @@ startCenario:
          
          
     
-    b2_imprimir:   
-        cmp houve_colisao_W, 1
-        jz startJogo
-        cmp houve_colisao_A, 1
-        jz startJogo
-        
+    b2_imprimir:
         ;valores iniciais variaveis
         mov al, 0x7  ; pixel color
         mov cx, 220   ; column
@@ -204,7 +196,7 @@ startCenario:
                         
         b2_pularlinha_fim:
             mov cx, 220 ; zerando a coluna
-            inc dx    ; prox linha  
+            inc dx    ; prox linha   
             
             cmp dx, 200
             jz startJogo
@@ -215,8 +207,9 @@ startCenario:
 
 
 startJogo:
-
-
+;mov al,13h
+;mov ah,0
+;int 10h     ; set graphics video mode.
  
 mov cx,150
 mov dx,90
@@ -224,10 +217,6 @@ mov col,160
 mov ant_col,150
 mov ant_linha,90
 mov al, 0xf ; pixel color
-mov houve_colisao_W, 0
-mov houve_colisao_A, 0
-mov houve_colisao_S, 0
-mov houve_colisao_D, 0
 
 
 again:
@@ -254,16 +243,7 @@ again:
         jmp again
            
 para:
-    cmp houve_colisao_W, 1
-    jz apaga_W
-    cmp houve_colisao_A, 1
-    jz apaga_A
-    cmp houve_colisao_S, 1
-    jz apaga_S
-    cmp houve_colisao_D, 1
-    jz apaga_D
-    
-    ; Limpa o cursor  
+    ; Limpa o cursor
     mov cx,0
     mov dx,0
     mov bh,0   
@@ -303,15 +283,14 @@ para:
     jz W
     
  
-D:  ;Funcionando
-    mov cx, ant_col
+D:  ;Funcionando 
+    mov cx,ant_col
     cmp cx,310
     jz auxiliar  
     
     jmp apaga_D 
     
     colisao_D:
-        mov houve_colisao_D, 1
         mov al,0x4 ; vermelho 0
         
     continua_D:
@@ -320,14 +299,13 @@ D:  ;Funcionando
         add col,10
         jmp again
 
-S:  ;Funcionando
+S:  ;Funcionando 
     mov dx,ant_linha
     cmp dx,190
     jz auxiliar
     jmp apaga_S
     
     colisao_S:
-        mov houve_colisao_S, 1
         mov al,0x4 ; vermelho 0
          
     continua_S:
@@ -344,7 +322,6 @@ A:  ;Funcionando
     jmp apaga_A
     
     colisao_A:
-       mov houve_colisao_A, 1
        mov al,0x4 ; vermelho 0
              
     continua_A: 
@@ -362,7 +339,6 @@ W:
     jmp apaga_W
     
     colisao_W:
-       mov houve_colisao_W, 1
        mov al,0x4 ; vermelho 
     
     continua_W:
@@ -490,9 +466,6 @@ auxiliar:  ; colidiu com a borda
    
 
 colisao1_tecla_A: ; colisao tecla A
-    cmp houve_colisao_A, 1
-    jz reimprimir
-    
     colisao_coluna_A: ; verifica se ele colidiu com a coluna 1
         cmp cx, 110    ; <=
         jle colisao_linha1_A ; tive a colisao na coluna 1, verificando a linha
@@ -507,11 +480,8 @@ colisao1_tecla_A: ; colisao tecla A
             
 
 colisao1_tecla_W:
-    cmp houve_colisao_W, 1
-    jz reimprimir
-    
     colisao_coluna_W: ; verifica se ele colidiu com a coluna 1
-        cmp dx, 110    ; <=
+        cmp dx, 100    ; <=
         jle colisao_linha1_W ; tive a colisao na coluna 1, verificando a linha
         mov al,0xf
         jmp continua_W
@@ -524,9 +494,6 @@ colisao1_tecla_W:
 
 
 colisao2_tecla_S: ; colisao tecla A
-    cmp houve_colisao_S, 1
-    jz reimprimir
-    
     colisao_coluna_S: ; verifica se ele colidiu com a coluna 1
         cmp dx, 100    ; <=
         jge colisao_linha1_S ; tive a colisao na coluna 1, verificando a linha
@@ -541,9 +508,6 @@ colisao2_tecla_S: ; colisao tecla A
             
 
 colisao2_tecla_D:
-    cmp houve_colisao_D, 1
-    jz reimprimir
-    
     colisao_coluna_D: ; verifica se ele colidiu com a coluna 1
         cmp cx, 220    ; <=
         jge colisao_linha1_D ; tive a colisao na coluna 1, verificando a linha
@@ -555,22 +519,6 @@ colisao2_tecla_D:
             jge colisao_D  ; colidiu coluna e linha
             mov al,0xf
             jmp continua_D ; everything is good, for now
-                                                        
-                                                        
-reimprimir:  ;Verifica onde qual bloco deve ser reimpresso         
-    mov linha,100  ;Seta a linha como 100
-    
-    ;Verificando local correto de reimpressao
-    cmp houve_colisao_W,1
-    jz b1_imprimir     
-    
-    cmp houve_colisao_A,1 
-    jz b1_imprimir
-    
-    cmp houve_colisao_S,1  
-    jz b2_imprimir
-    
-    cmp houve_colisao_D,1  
-    jz b2_imprimir
+
 
 fim: ret
